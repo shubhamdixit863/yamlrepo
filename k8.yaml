@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: testing-deployment
+  namespace: numaplane-system
   labels:
     app: testing-server
 spec:
