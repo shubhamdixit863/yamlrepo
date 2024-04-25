@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: techspark-backend-api
+spec:
+  selector:
+    matchLabels:
+      app: techspark-backend-api
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: techspark-backend-api
+    spec:
+      containers:
+        - name: techspark-backend-api
+          image: shubhamdixit863/techspark-backend-api:latest
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: COGNITO_APP_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: COGNITO_APP_CLIENT_ID
+            - name: COGNITO_USER_POOL_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: COGNITO_USER_POOL_ID
+            - name: AWS_DEFAULT_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AWS_DEFAULT_REGION
+            - name: AZURE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AZURE_URL
+            - name: DB_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: DB_URL
+            - name: AZURE_ACCOUNT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AZURE_ACCOUNT_NAME
+            - name: AZURE_ACCOUNT_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: techspark-db-config
+                  key: AZURE_ACCOUNT_KEY
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: techspark-backend-api-service
+spec:
+  selector:
+    app: techspark-backend-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080  # Update this if different from 9090
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: techspark-db-config
+data:
+  COGNITO_APP_CLIENT_ID: "test"
+  COGNITO_USER_POOL_ID: "test"
+  AWS_DEFAULT_REGION: "test"
+  AWS_ACCESS_KEY_ID: "test"
+  AWS_SECRET_ACCESS_KEY: "test"
+  DB_URL: "test"
+  AZURE_URL: "test"
+  AZURE_ACCOUNT_NAME: "test"
+  AZURE_ACCOUNT_KEY: "test"
+
